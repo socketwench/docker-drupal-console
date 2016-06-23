@@ -7,10 +7,11 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     libmcrypt-dev \
     libpng12-dev \
-    libicu-dev
+    libicu-dev \
+    mysql-client
 
 # Enable php modules.
-RUN docker-php-ext-install gd json intl pdo pdo_mysql mbstring opcache
+RUN docker-php-ext-install gd json intl pdo pdo_mysql mysqli mbstring opcache
 
 # Download console.
 RUN curl https://drupalconsole.com/installer -L -o drupal.phar
@@ -20,4 +21,8 @@ RUN mv drupal.phar /usr/local/bin/drupal && \
     chmod +x /usr/local/bin/drupal && \
     drupal init --override
 
-ENTRYPOINT drupal
+WORKDIR /var/www/html
+
+RUN drupal settings:set checked "true"
+
+ENTRYPOINT ["drupal"]
